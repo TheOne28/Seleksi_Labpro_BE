@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  username    String     @unique
+  name        String
+  password    String
+  fotoKTP     String
+  linkKTP     String
+  saldo       Int
+  role        Role
+  transerSrc  Transfer[] @relation("UserSrc")
+  tranferDest Transfer[] @relation("UserDest")
+  historyUbah Ubah[]
+
+}
+
+model Transfer {
+  idTransfer   Int      @id @default(autoincrement())
+  datetime     DateTime @default(now())
+  userSrc      User     @relation("UserSrc", fields: [usernameSrc], references: [username])
+  usernameSrc  String
+  userDest     User     @relation("UserDest", fields: [usernameDest], references: [username])
+  usernameDest String
+
+}
+
+model Ubah {
+  idUbah   Int      @id @default(autoincrement())
+  datetime DateTime @default(now())
+  amount   Int
+  currency String?  @default("rupiah")
+  status   Status
+  user     User     @relation(fields: [username], references: [username])
+  username String
+  tipe     Tipe
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+  NOTVERIFIED
+}
+
+enum Status {
+  NOTVERIFIED
+  ACCEPT
+  REFUSE
+}
+
+enum Tipe {
+  PENDAPATAN
+  PENGELUARAN
+}
