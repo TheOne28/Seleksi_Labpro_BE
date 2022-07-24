@@ -21,7 +21,6 @@ model User {
   transerSrc  Transfer[] @relation("UserSrc")
   tranferDest Transfer[] @relation("UserDest")
   historyUbah Ubah[]
-
 }
 
 model Transfer {
@@ -31,7 +30,6 @@ model Transfer {
   usernameSrc  String
   userDest     User     @relation("UserDest", fields: [usernameDest], references: [username])
   usernameDest String
-
 }
 
 model Ubah {
