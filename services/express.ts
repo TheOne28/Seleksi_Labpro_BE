@@ -16,7 +16,11 @@ export class ExpressInstance{
     }
 
     public static getInstance(): ExpressInstance{
-        return this.expressInstance || (this.expressInstance = new this());
+        if( !ExpressInstance.expressInstance){
+            ExpressInstance.expressInstance = new ExpressInstance()
+        }
+
+        return ExpressInstance.expressInstance;
     }
 
     public getApp(): express.Application{

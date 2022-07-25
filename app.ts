@@ -2,8 +2,6 @@
 import express from 'express'
 require('dotenv').config();
 
-const sourcePath = 'src';
-
 import { ExpressInstance } from './services/express';
 
 const port = process.env.PORT || 3001;
