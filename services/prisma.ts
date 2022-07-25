@@ -22,6 +22,6 @@ export class PrismaInstance{
     }
 
     public disconnect(){
-        this._client.$disconnect();
+        this._client.$disconnect(); 
     }
 }
