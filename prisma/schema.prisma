@@ -12,12 +12,12 @@ datasource db {
 
 model User {
   username    String     @unique
-  name        String
+  name        String 
   password    String
   fotoKTP     String
   linkKTP     String
-  saldo       Int
-  role        Role
+  saldo       Int        @default(0)
+  role        Role       @default(NOTVERIFIED)
   transerSrc  Transfer[] @relation("UserSrc")
   tranferDest Transfer[] @relation("UserDest")
   historyUbah Ubah[]
@@ -35,8 +35,7 @@ model Transfer {
 model Ubah {
   idUbah   Int      @id @default(autoincrement())
   datetime DateTime @default(now())
-  amount   Int
-  currency String?  @default("rupiah")
+  amount   Int    
   status   Status
   user     User     @relation(fields: [username], references: [username])
   username String
@@ -51,8 +50,8 @@ enum Role {
 
 enum Status {
   NOTVERIFIED
-  ACCEPT
-  REFUSE
+  ACCEPTED
+  REFUSED
 }
 
 enum Tipe {
