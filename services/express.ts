@@ -11,8 +11,8 @@ export class ExpressInstance{
         this._app = express();
 
         this._app.use(cors());
-        this._app.use(express.json());
 
+        this._app.use(express.json());
     }
 
     public static getInstance(): ExpressInstance{

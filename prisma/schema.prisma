@@ -12,7 +12,7 @@ datasource db {
 
 model User {
   username    String     @unique
-  name        String 
+  name        String
   password    String
   fotoKTP     String
   linkKTP     String
@@ -35,7 +35,7 @@ model Transfer {
 model Ubah {
   idUbah   Int      @id @default(autoincrement())
   datetime DateTime @default(now())
-  amount   Int    
+  amount   Int
   status   Status
   user     User     @relation(fields: [username], references: [username])
   username String

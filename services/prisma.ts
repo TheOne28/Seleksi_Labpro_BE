@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import {PrismaClient } from "@prisma/client";
 
 export class PrismaInstance{
     private static prismaInstance : PrismaInstance;
@@ -17,7 +17,7 @@ export class PrismaInstance{
         return PrismaInstance.prismaInstance;
     }
 
-    public getClinet(): PrismaClient{
+    public getClient(): PrismaClient{
         return this._client;
     }
 

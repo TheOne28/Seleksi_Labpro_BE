@@ -11,16 +11,18 @@ const app : express.Application = ExpressInstance.getInstance().getApp();
 
 app.get('/', (req, res) =>{
     console.log("Hello world");
+
+    res.sendStatus(200);
 })
 
-const profileRouter = require('./route/profileRoute');
-const mutasiRouter = require('./route/mutasiRoute');
-const historyRouter = require('./route/historyRoute');
+// const profileRouter = require('./route/profileRoute');
+// const mutasiRouter = require('./route/mutasiRoute');
+// const historyRouter = require('./route/historyRoute');
 const autentikasiRouter = require('./route/authentikasiRoute');
 
-app.use('/profile', profileRouter);
-app.use('/mutasi', mutasiRouter);
-app.use('/history', historyRouter);
+// app.use('/profile', profileRouter);
+// app.use('/mutasi', mutasiRouter);
+// app.use('/history', historyRouter);
 app.use('/authen', autentikasiRouter);
 
 app.listen(port, () =>{
