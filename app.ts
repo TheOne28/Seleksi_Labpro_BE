@@ -15,12 +15,12 @@ app.get('/', (req, res) =>{
     res.sendStatus(200);
 })
 
-// const profileRouter = require('./route/profileRoute');
+const profileRouter = require('./route/profileRoute');
 // const mutasiRouter = require('./route/mutasiRoute');
 // const historyRouter = require('./route/historyRoute');
 const autentikasiRouter = require('./route/authentikasiRoute');
 
-// app.use('/profile', profileRouter);
+app.use('/profile', profileRouter);
 // app.use('/mutasi', mutasiRouter);
 // app.use('/history', historyRouter);
 app.use('/authen', autentikasiRouter);

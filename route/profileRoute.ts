@@ -1,12 +1,13 @@
 import express from "express";
-import { profileGetHandler } from "../controller/profileHandler";
+import { profileGetHandler, profilePatchHandler } from "../controller/profileHandler";
 import { authentication } from "../middleware/authMiddleware";
 
 const router : express.Router = express.Router();
 
-//get customer data
-router.get("/:username", authentication, profileGetHandler);
+// * get customer data
+router.get("/" , authentication, profileGetHandler);
 
-router.patch("/");
+// * Update customer profile (own profile)
+router.patch("/", authentication, profilePatchHandler);
 
-export default router;
+module.exports = router;

@@ -11,6 +11,7 @@ export async function loginHandler(req: Request<{}, {}, {password : string}, {us
 
     if(typeof username === undefined || typeof password === undefined){
         res.send({
+            status: "Error",
             data: "Bad request"
         }).status(400);
         return;
@@ -150,6 +151,7 @@ export async function verifyUserHandler(req: Request<{}, {}, {allUser : string[]
 
     if(!success){
         res.send({
+            status: 'Error',
             data: "Internal server error",
         }).status(500);
         return;
