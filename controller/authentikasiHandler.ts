@@ -2,11 +2,19 @@ import { Request, Response} from "express";
 import {generatePassword, verifyPassword} from "../lib/hash";
 import {PrismaInstance} from '../services/prisma';
 import {Role, User } from "@prisma/client";
+import { generateToken } from "../lib/jwt";
 
 export async function loginHandler(req: Request<{}, {}, {password : string}, {username: 'string'}>, res: Response){
     const username : string = req.query.username;
     const password : string = req.body.password; 
     const prisma = PrismaInstance.getInstance().getClient();
+
+    if(typeof username === undefined || typeof password === undefined){
+        res.send({
+            data: "Bad request"
+        }).status(400);
+        return;
+    }
 
     const user : User | null = await prisma.user.findUnique({
         where:{
@@ -16,12 +24,14 @@ export async function loginHandler(req: Request<{}, {}, {password : string}, {us
 
     if(user === null){
         res.send({
+            status: "Error",
             data: "User not yet registered"
         }).status(404);
         return;
     }else{
         if(user.role === Role.NOTVERIFIED){
             res.send({
+                status: "Error",
                 data: "User not yet verified"
             }).status(403);
             return;
@@ -32,12 +42,15 @@ export async function loginHandler(req: Request<{}, {}, {password : string}, {us
         const same : boolean= await verifyPassword(password, hashPassword);
         
         if(same){
+            const token = generateToken(user.username);
             res.send({
-                data: "Success"
+                status: "Success",
+                data: token,
             }).status(200);
             return;
         }else{
             res.send({
+                status: "Error",
                 data: "Wrong password"
             }).status(401);
             return;
@@ -60,6 +73,12 @@ export async function registerHandler(req: Request<{}, {},
     const fotoKtp : string = req.body.fotoKtp;
     const prisma = PrismaInstance.getInstance().getClient();
 
+    if(typeof username === undefined || typeof name === undefined || typeof password === undefined || typeof linkKtp === undefined || typeof fotoKtp === undefined){
+        res.send({
+            data: "Bad request"
+        }).status(400);
+        return;
+    }
 
     const hashPassword : string = await generatePassword(password);
 
@@ -101,6 +120,14 @@ export async function verifyUserHandler(req: Request<{}, {}, {allUser : string[]
 
     const alluser : string[] = req.body.allUser;
     const allrole : Role[] = req.body.role;
+
+    if(typeof allrole === undefined || typeof alluser === undefined || allrole.length !== alluser.length){
+        res.send({
+            data: "Bad request"
+        }).status(400);
+        return;
+    }
+
     var success = true;
 
     for(let i = 0; i < alluser.length; i ++){
