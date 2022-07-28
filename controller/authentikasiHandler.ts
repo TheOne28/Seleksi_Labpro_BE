@@ -38,11 +38,10 @@ export async function loginHandler(req: Request<{}, {}, {password : string}, {us
         }
 
         const hashPassword: string = user.password;
-
         const same : boolean= await verifyPassword(password, hashPassword);
         
         if(same){
-            const token = generateToken(user.username);
+            const token = generateToken(user.username, user.role);
             res.send({
                 status: "Success",
                 data: token,

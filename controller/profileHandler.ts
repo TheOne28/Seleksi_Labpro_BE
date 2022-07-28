@@ -1,1 +1,5 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
+
+export function profileGetHandler(req: Request, res: Response){
+    
+}

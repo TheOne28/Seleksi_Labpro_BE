@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import {PrismaInstance} from '../services/prisma';
 import { verifyToken } from "../lib/jwt";
 
-export async function authentication(req: Request, res: Response, next: NextFunction){
+export function authentication(req: Request, res: Response, next: NextFunction){
     const authHeader  = req.headers['authorization'];
     
     if(typeof authHeader === undefined){
@@ -23,7 +22,9 @@ export async function authentication(req: Request, res: Response, next: NextFunc
         }).status(403);
     }else{
         //@ts-ignore
-        req.user = user;
+        req.user = user.username;
+        //@ts-ignore
+        req.role = user.role;
         next();
     }
 }
