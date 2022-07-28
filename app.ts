@@ -17,13 +17,12 @@ app.get('/', (req, res) =>{
 
 const profileRouter = require('./route/profileRoute');
 // const mutasiRouter = require('./route/mutasiRoute');
-// const historyRouter = require('./route/historyRoute');
+const historyRouter = require('./route/historyRoute');
 const autentikasiRouter = require('./route/authentikasiRoute');
 
 app.use('/profile', profileRouter);
 // app.use('/mutasi', mutasiRouter);
-// app.use('/history', historyRouter);
-app.use('/authen', autentikasiRouter);
+/app.use('/authen', autentikasiRouter);
 
 app.listen(port, () =>{
     console.log(`Server is running on port: ${port}`);

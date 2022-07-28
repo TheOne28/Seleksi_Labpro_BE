@@ -27,6 +27,8 @@ export async function profileGetHandler(req: Request, res: Response){
         where: req.query
     })
 
+    //FIXME 
+    // ! Fix kasus error prisma, harusnya bukan null
     if(allUser === null){
         res.send({
             status: "Error",
@@ -65,6 +67,8 @@ export async function profilePatchHandler(req: Request, res: Response) {
         data: req.body,
     });
 
+    //FIXME 
+    // ! Fix kasus error prisma, harusnya bukan null
     if(newUser === null){
         res.send({
             status: "Error",
