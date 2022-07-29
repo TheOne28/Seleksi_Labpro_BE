@@ -113,7 +113,8 @@ export async function verifyUserHandler(req: Request<{}, {}, {allUser : string[]
 
     if(role !== Role.ADMIN){
         res.send({
-            data : "User don't have access"
+            status: "Error",
+            data : "Illegal access"
         }).status(403);
         return
     }
@@ -123,6 +124,7 @@ export async function verifyUserHandler(req: Request<{}, {}, {allUser : string[]
 
     if(typeof allrole === undefined || typeof alluser === undefined || allrole.length !== alluser.length){
         res.send({
+            status: "Error",
             data: "Bad request"
         }).status(400);
         return;
