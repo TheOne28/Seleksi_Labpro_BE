@@ -1,9 +1,11 @@
 import express from "express";
+import { addMutasiHandler, addTransferHandler, verifikasiPendapatanHandler } from "../controller/mutasiHandler";
+import { authentication } from "../middleware/authMiddleware";
 
 const router : express.Router = express.Router();
 
-router.get("/");
-router.patch("/");
-router.put("/");
+router.patch("/", authentication, verifikasiPendapatanHandler);
+router.put("/mutasi", authentication, addMutasiHandler);
+router.put("/transfer", authentication, addTransferHandler)
 
-export default router;
+module.exports = router;
