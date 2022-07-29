@@ -36,7 +36,7 @@ model Ubah {
   idUbah   Int      @id @default(autoincrement())
   datetime DateTime @default(now())
   amount   Int
-  status   Status
+  status   Status   @default(NOTVERIFIED)
   user     User     @relation(fields: [username], references: [username])
   username String
   tipe     Tipe

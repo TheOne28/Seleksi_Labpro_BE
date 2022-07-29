@@ -71,7 +71,27 @@ export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allUser 
 }
 
 export function addMutasiHandler(req: Request, res: Response){
+    // @ts-ignore
+    const username = req.username;
 
+    const prisma = PrismaInstance.getInstance().getClient();
+    const newUbah = prisma.ubah.create({
+        data: req.body
+    })
+
+    if(newUbah === null){
+        res.send({
+            status: "Error",
+            data : "Internal server error"
+        }).status(500);
+        return ;
+    }
+
+    res.send({
+        status: "Success",
+        data:newUbah,
+    }).status(200);
+    return;
 }
 
 export function addTransferHandler(req: Request, res: Response){

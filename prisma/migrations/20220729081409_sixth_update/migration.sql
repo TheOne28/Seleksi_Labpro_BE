@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Ubah" ALTER COLUMN "status" SET DEFAULT 'NOTVERIFIED';
