@@ -75,6 +75,7 @@ export async function registerHandler(req: Request<{}, {},
 
     if(typeof username === undefined || typeof name === undefined || typeof password === undefined || typeof linkKtp === undefined || typeof fotoKtp === undefined){
         res.send({
+            status: "Error",
             data: "Bad request"
         }).status(400);
         return;

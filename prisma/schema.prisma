@@ -3,6 +3,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["interactiveTransactions"]
 }
 
 datasource db {
@@ -30,6 +31,7 @@ model Transfer {
   usernameSrc  String
   userDest     User     @relation("UserDest", fields: [usernameDest], references: [username])
   usernameDest String
+  amount       Int
 }
 
 model Ubah {

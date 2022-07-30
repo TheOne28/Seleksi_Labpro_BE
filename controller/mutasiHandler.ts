@@ -2,8 +2,6 @@ import { Role, Status,  } from "@prisma/client";
 import { Request, Response} from "express";
 import { PrismaInstance } from "../services/prisma";
 
-//FIXME
-//Implement 
 
 export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allUser : string[], status : Status[]}, {}>, res: Response){
     //@ts-ignore
@@ -74,7 +72,21 @@ export function addMutasiHandler(req: Request, res: Response){
     // @ts-ignore
     const username = req.username;
 
+    //@ts-ignore
+    const role = req.role;
     const prisma = PrismaInstance.getInstance().getClient();
+    
+    if(role === Role.NOTVERIFIED){
+        res.send({
+            status: "Error",
+            data: "Illegal access"
+        }).status(403);
+        return;
+    }
+
+
+    //TODO
+    //Implement currency dan body 
     const newUbah = prisma.ubah.create({
         data: req.body
     })
@@ -94,6 +106,36 @@ export function addMutasiHandler(req: Request, res: Response){
     return;
 }
 
-export function addTransferHandler(req: Request, res: Response){
+export function addTransferHandler(req: Request<{}, {},
+{
+    target: string,
+    amount: number
+
+}, {}>, res: Response){
+    // @ts-ignore
+    const username = req.username;
+
+    //@ts-ignore
+    const role = req.role;
+    const prisma = PrismaInstance.getInstance().getClient();
+    
+    if(role === Role.NOTVERIFIED){
+        res.send({
+            status: "Error",
+            data: "Illegal access"
+        }).status(403);
+        return;
+    }
+
+    const target : string = req.body.target;
+    const amount : number = req.body.amount;
+
+    if(target === username){
+        res.send({
+            status: "Error",
+            data: "Bad request",
+        }).status(400);
+        return;
+    }
 
 }
