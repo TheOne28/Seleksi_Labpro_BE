@@ -1,4 +1,7 @@
+import { Status, Tipe } from "@prisma/client";
+import { statSync } from "fs";
 import { PrismaInstance } from "../services/prisma";
+import { convertCurrency } from "./currency";
 
 export async function transferTransaction(src: string, dest: string, amount: number) {
     const prisma = PrismaInstance.getInstance().getClient();
@@ -54,5 +57,53 @@ export async function transferTransaction(src: string, dest: string, amount: num
         })
 
         return newTransfer
+    },{
+        maxWait: 5000,
+        timeout: 10000,
     })
 }
+
+export async function mutasiTransaction(idUbah: number, status: Status) {
+    const prisma = PrismaInstance.getInstance().getClient();
+
+    return await prisma.$transaction(async(prisma) => {
+        const newUbah = await prisma.ubah.update({
+            data: {
+                status: status,
+            },
+            where:{
+                idUbah : idUbah
+            }
+        })
+
+
+        if(status == Status.REJECTED){
+            return [newUbah, null]
+        }
+
+        var newUser;
+        if( newUbah.tipe == Tipe.PENAMBAHAN){
+            newUser = await prisma.user.update({
+                data:{
+                    saldo:{
+                        increment: newUbah.amount,
+                    }
+                },where:{
+                    username : newUbah.username
+                }
+            })
+        }else{
+            newUser = await prisma.user.update({
+                data: {
+                    saldo: {
+                        decrement: newUbah.amount,
+                    }
+                }, where:{
+                    username :  newUbah.username,
+                }
+            })
+        }
+        return [newUbah, newUser]
+    })
+
+} 

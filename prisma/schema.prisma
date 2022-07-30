@@ -53,10 +53,10 @@ enum Role {
 enum Status {
   NOTVERIFIED
   ACCEPTED
-  REFUSED
+  REJECTED
 }
 
 enum Tipe {
-  PENDAPATAN
-  PENGELUARAN
+  PENAMBAHAN
+  PENGURANGAN
 }

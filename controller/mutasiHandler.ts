@@ -1,9 +1,12 @@
-import { Role, Status,  } from "@prisma/client";
+import { Role, Status, Tipe,  } from "@prisma/client";
 import { Request, Response} from "express";
+import { statSync } from "fs";
+import { convertCurrency } from "../lib/currency";
+import { mutasiTransaction, transferTransaction } from "../lib/transaction";
 import { PrismaInstance } from "../services/prisma";
 
 
-export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allUser : string[], status : Status[]}, {}>, res: Response){
+export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allId : number[], status : Status[]}, {}>, res: Response){
     //@ts-ignore
     const username = req.username;
 
@@ -21,10 +24,10 @@ export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allUser 
         return;
     }
 
-    const allUser : string[] = req.body.allUser;
+    const allId : number[] = req.body.allId;
     const allStatus : Status[] = req.body.status;
 
-    if(typeof allUser === undefined || typeof allStatus === undefined || allUser.length !== allStatus.length){
+    if(typeof allId === undefined || typeof allStatus === undefined || allId.length !== allStatus.length){
         res.send({
             status: "Error",
             data: "Bad request"
@@ -32,34 +35,15 @@ export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allUser 
         return;
     }
 
-    var success = true;
 
-    for(let i = 0; i < allUser.length; i ++){
-        const user = allUser[i];
+    for(let i = 0; i < allId.length; i ++){
+        const id = allId[i];
         const status = allStatus[i];
         
-        const newUbah = await prisma.ubah.updateMany({
-            where: {
-                username : user
-            },
-            data:{
-                status : status,
-            }
-        })
-
-        if(newUbah === null){
-            success = false;
-        }
+        await mutasiTransaction(id, status)
 
     }
 
-    if(!success){
-        res.send({
-            status: 'Error',
-            data: "Internal server error",
-        }).status(500);
-        return;
-    }
 
     res.send({
         status: "Success",
@@ -68,7 +52,12 @@ export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allUser 
 
 }
 
-export function addMutasiHandler(req: Request, res: Response){
+export function addMutasiHandler(req: Request<{}, {}, 
+{
+    amount: number,
+    currency: string,
+    tipe: Tipe
+}, {}>, res: Response){
     // @ts-ignore
     const username = req.username;
 
@@ -84,11 +73,18 @@ export function addMutasiHandler(req: Request, res: Response){
         return;
     }
 
+    const amount : number = req.body.amount;
+    const currency : string = req.body.currency;
+    const tipe: Tipe = req.body.tipe;
 
-    //TODO
-    //Implement currency dan body 
+    const inRupiah : number = convertCurrency(amount, currency);
+
     const newUbah = prisma.ubah.create({
-        data: req.body
+        data:{
+            amount: inRupiah,
+            username : username,
+            tipe: tipe
+        }
     })
 
     if(newUbah === null){
@@ -106,11 +102,11 @@ export function addMutasiHandler(req: Request, res: Response){
     return;
 }
 
-export function addTransferHandler(req: Request<{}, {},
+export async function addTransferHandler(req: Request<{}, {},
 {
     target: string,
-    amount: number
-
+    amount: number,
+    currency: string,
 }, {}>, res: Response){
     // @ts-ignore
     const username = req.username;
@@ -129,6 +125,9 @@ export function addTransferHandler(req: Request<{}, {},
 
     const target : string = req.body.target;
     const amount : number = req.body.amount;
+    const currency: string = req.body.currency;
+
+    const inRupiah : number = convertCurrency(amount, currency);
 
     if(target === username){
         res.send({
@@ -136,6 +135,20 @@ export function addTransferHandler(req: Request<{}, {},
             data: "Bad request",
         }).status(400);
         return;
-    }
+    }   
 
+    try{
+        const newTransfer = await transferTransaction(username, target, inRupiah);
+        res.send({
+            status: "Success",
+            data: newTransfer,
+        }).status(200);
+        return;
+    }catch(err) {
+        res.send({
+            status: "Error",
+            data: err,
+        }).status(404);
+        return;
+    }
 }
