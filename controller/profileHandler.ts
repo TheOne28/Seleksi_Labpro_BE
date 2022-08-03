@@ -9,17 +9,19 @@ export async function profileGetHandler(req: Request, res: Response){
         const allUser : User[] = await prisma.user.findMany();
         
         if(allUser === null){
+            res.status(500);
             res.send({
                 status: "Error",
                 data : "Internal server error"
-            }).status(500);
+            })
             return;
         }
 
+        res.status(200);
         res.send({
             status: "Success",
             data: allUser,
-        }).status(200);
+        })
         return;
     }
 
@@ -30,33 +32,36 @@ export async function profileGetHandler(req: Request, res: Response){
     //FIXME 
     // ! Fix kasus error prisma, harusnya bukan null
     if(allUser === null){
+        res.status(500);
         res.send({
             status: "Error",
             data : "Internal server error"
-        }).status(500);
+        })
         return;
     }
 
+    res.status(200);
     res.send({
         status: 'Success',
         data : allUser,
-    }).status(200);
+    })
 
     return;
 }
 
 export async function profilePatchHandler(req: Request, res: Response) {
     //@ts-ignore
-    const username = req.username;
+    const username = res.locals.username;
     //@ts-ignore
-    const role = req.role;
+    const role = req.locals.role;
     const prisma = PrismaInstance.getInstance().getClient();
 
     if(role === Role.NOTVERIFIED){
+        res.status(403);
         res.send({
             status: "Error",
             data : "User not yet verified"
-        }).status(403);
+        })
         return;
     }
 
@@ -70,16 +75,18 @@ export async function profilePatchHandler(req: Request, res: Response) {
     //FIXME 
     // ! Fix kasus error prisma, harusnya bukan null
     if(newUser === null){
+        res.status(500);
         res.send({
             status: "Error",
             data : 'Internal server error'
-        }).status(500);
+        })
         return;
     }
 
+    res.status(200);
     res.send({
         status: "Success",
         data: newUser
-    }).status(200);
+    })
     return;
 }

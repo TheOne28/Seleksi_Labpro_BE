@@ -13,11 +13,11 @@ export async function transferTransaction(src: string, dest: string, amount: num
                 username : dest,
             }
         })
-
         if(recipient === null){
             throw new Error(`There is no existing account with username ${dest}`);
         }
-
+        
+        console.log(amount);    
         //Decrement sender's balance and make sure sender's have enough balance
         const newSender = await prisma.user.update({
             data: {
@@ -29,7 +29,7 @@ export async function transferTransaction(src: string, dest: string, amount: num
                 username : src
             }
         })
-
+        
         if(newSender.saldo < 0){
             throw new Error(`${src} doesn't have enough saldo to sent ${amount} rupiah`)
         }

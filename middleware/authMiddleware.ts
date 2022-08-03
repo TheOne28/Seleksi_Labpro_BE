@@ -22,9 +22,9 @@ export function authentication(req: Request, res: Response, next: NextFunction){
         }).status(403);
     }else{
         //@ts-ignore
-        req.user = user.username;
+        res.locals.username = user.username;
         //@ts-ignore
-        req.role = user.role;
+        res.locals.role = user.role;
         next();
     }
 }

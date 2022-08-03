@@ -1,7 +1,8 @@
+import { getCache } from "./cache";
 
-//TODO
-//Implement currency exchange
 
-export function convertCurrency(amount: number, source: string) : number{
-    return 0;
+export async function convertCurrency(amount: number, source: string) : Promise<number>{
+    const rates = await getCache(source)
+    console.log(rates);
+    return amount * rates;
 }

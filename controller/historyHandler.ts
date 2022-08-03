@@ -7,15 +7,16 @@ export async function historyGetHandler(req: Request, res: Response) {
     const prisma = PrismaInstance.getInstance().getClient();
 
     //@ts-ignore
-    const username = req.username;
+    const username = res.locals.username;
     //@ts-ignore
-    const role = req.role;
+    const role = res.locals.role;
 
     if(role === Role.NOTVERIFIED){
+        res.status(403);
         res.send({
             status: "Error",
             data : "User not yet verified"
-        }).status(403);
+        })
         return;
     }
 
@@ -39,20 +40,22 @@ export async function historyGetHandler(req: Request, res: Response) {
     //FIXME 
     // ! Fix kasus error prisma, harusnya bukan null
     if(allUbah === null || allTransfer === null){
+        res.status(500);
         res.send({
             status: "Error",
             data : 'Internal server error'
-        }).status(500);
+        })
         return;
     }
 
+    res.status(200);
     res.send({
         status: "Success",
         data: {
             transfer : allTransfer,
             ubah : allUbah,
         }
-    }).status(200);
+    })
     return;
     
     

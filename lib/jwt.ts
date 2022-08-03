@@ -12,12 +12,12 @@ export function generateToken(username: string, role: Role) : string{
 
 export function verifyToken(token: string){
     var val;
-
     jwt.verify(token, process.env.TOKEN_SECRET as string, (err: any, user: any) =>{
         if(err){
             val = null;
         }
-
+        console.log(user);
+        
         val = {
             username: user.username,
             role : user.role,

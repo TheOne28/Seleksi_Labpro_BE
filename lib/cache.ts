@@ -7,7 +7,7 @@ export async function getCache(key: string){
     if(cached){
         return cached;
     }else{
-        if(key == "getid"){
+        if(key === "getid"){
             const id = await getAllID();
             mcache.put(key, id);
             return id;
@@ -21,6 +21,7 @@ export async function getCache(key: string){
 
 
 async function getCurrent(target: string){
+    console.log("Here");
     const response = await axios.get(
         `https://api.apilayer.com/exchangerates_data/latest?symbols=${target}&base=IDR`,
         {
@@ -30,8 +31,8 @@ async function getCurrent(target: string){
             responseType: 'text',
         }
     )
-
-    return response.data.rates.target;
+    console.log(response.data.rates);
+    return response.data.rates[target];
 }
 
 async function getAllID(){

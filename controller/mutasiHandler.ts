@@ -1,5 +1,6 @@
 import { Role, Status, Tipe,  } from "@prisma/client";
 import { Request, Response} from "express";
+import { getCache } from "../lib/cache";
 import { convertCurrency } from "../lib/currency";
 import { mutasiTransaction, transferTransaction } from "../lib/transaction";
 import { PrismaInstance } from "../services/prisma";
@@ -7,19 +8,17 @@ import { PrismaInstance } from "../services/prisma";
 
 export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allId : number[], status : Status[]}, {}>, res: Response){
     //@ts-ignore
-    const username = req.username;
+    const username = res.locals.username;
 
     //@ts-ignore
-    const role = req.role;
-
-    const prisma = PrismaInstance.getInstance().getClient();
-
+    const role = res.locals.role;
 
     if(role !== Role.ADMIN){
+        res.status(403);
         res.send({
             status: "Error",
             data: "Illegal access"
-        }).status(403);
+        })
         return;
     }
 
@@ -27,10 +26,11 @@ export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allId : 
     const allStatus : Status[] = req.body.status;
 
     if(typeof allId === undefined || typeof allStatus === undefined || allId.length !== allStatus.length){
+        res.status(400);
         res.send({
             status: "Error",
             data: "Bad request"
-        }).status(400);
+        })
         return;
     }
 
@@ -43,32 +43,33 @@ export async function verifikasiPendapatanHandler(req: Request<{}, {}, {allId : 
 
     }
 
-
+    res.status(200);
     res.send({
         status: "Success",
         data : {},
-    }).status(200);
+    })
 
 }
 
-export function addMutasiHandler(req: Request<{}, {}, 
+export async function addMutasiHandler(req: Request<{}, {}, 
 {
     amount: number,
     currency: string,
     tipe: Tipe
 }, {}>, res: Response){
     // @ts-ignore
-    const username = req.username;
+    const username = res.locals.username;
 
     //@ts-ignore
-    const role = req.role;
+    const role = req.locals.role;
     const prisma = PrismaInstance.getInstance().getClient();
     
     if(role === Role.NOTVERIFIED){
+        res.status(403);
         res.send({
             status: "Error",
             data: "Illegal access"
-        }).status(403);
+        })
         return;
     }
 
@@ -76,7 +77,7 @@ export function addMutasiHandler(req: Request<{}, {},
     const currency : string = req.body.currency;
     const tipe: Tipe = req.body.tipe;
 
-    const inRupiah : number = convertCurrency(amount, currency);
+    const inRupiah : number = await convertCurrency(amount, currency);
 
     const newUbah = prisma.ubah.create({
         data:{
@@ -87,17 +88,19 @@ export function addMutasiHandler(req: Request<{}, {},
     })
 
     if(newUbah === null){
+        res.status(500);
         res.send({
             status: "Error",
             data : "Internal server error"
-        }).status(500);
+        })
         return ;
     }
 
+    res.status(200);
     res.send({
         status: "Success",
         data:newUbah,
-    }).status(200);
+    })
     return;
 }
 
@@ -108,17 +111,18 @@ export async function addTransferHandler(req: Request<{}, {},
     currency: string,
 }, {}>, res: Response){
     // @ts-ignore
-    const username = req.username;
+    const username = res.locals.username;
 
     //@ts-ignore
-    const role = req.role;
+    const role = res.locals.role;
     const prisma = PrismaInstance.getInstance().getClient();
     
     if(role === Role.NOTVERIFIED){
+        res.status(403);
         res.send({
             status: "Error",
             data: "Illegal access"
-        }).status(403);
+        })
         return;
     }
 
@@ -126,28 +130,41 @@ export async function addTransferHandler(req: Request<{}, {},
     const amount : number = req.body.amount;
     const currency: string = req.body.currency;
 
-    const inRupiah : number = convertCurrency(amount, currency);
-
+    const inRupiah : number = await convertCurrency(amount, currency);
     if(target === username){
+        res.status(400);
         res.send({
             status: "Error",
             data: "Bad request",
-        }).status(400);
+        })
         return;
     }   
 
     try{
+        console.log(inRupiah);
         const newTransfer = await transferTransaction(username, target, inRupiah);
+        res.status(200);
         res.send({
             status: "Success",
             data: newTransfer,
-        }).status(200);
+        })
         return;
     }catch(err) {
+        res.status(400);
         res.send({
             status: "Error",
             data: err,
-        }).status(404);
+        })
         return;
     }
+}
+
+export async function getCurrencyHanddler(req: Request, res: Response){
+    const currency = await getCache("getid");
+
+    res.status(200);
+    res.send({
+        status: "Success",
+        data: currency,
+    })
 }
