@@ -6,7 +6,7 @@ import { ExpressInstance } from './services/express';
 require('dotenv').config();
 
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 const app : express.Application = ExpressInstance.getInstance().getApp();
 
 app.get('/', (req, res) =>{

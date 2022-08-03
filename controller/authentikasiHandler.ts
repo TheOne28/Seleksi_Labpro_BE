@@ -9,9 +9,8 @@ export async function loginHandler(req: Request<{}, {}, {}, {username : string, 
     const password : string = req.query.password; 
     const prisma = PrismaInstance.getInstance().getClient();
     
-    console.log(req.query);
     if(username === undefined ||password === undefined){
-        res.status(400);
+        res.status(400);    
         res.send({
             status: "Error",
             data: "Bad request"
@@ -84,11 +83,29 @@ export async function registerHandler(req: Request<{}, {},
     const fotoKtp : string = req.body.fotoKtp;
     const prisma = PrismaInstance.getInstance().getClient();
 
+    console.log("Here");
+    console.log(req.body);
     if(typeof username === undefined || typeof name === undefined || typeof password === undefined || typeof linkKtp === undefined || typeof fotoKtp === undefined){
+        res.status(400);
         res.send({
             status: "Error",
             data: "Bad request"
-        }).status(400);
+        });
+        return;
+    }
+
+    const existuser : User | null = await prisma.user.findUnique({
+        where:{
+            username: username
+        }
+    })
+
+    if(existuser !== null){
+        res.status(403);
+        res.send({
+            status: "Error",
+            data : "Username already exist"
+        });
         return;
     }
 
@@ -105,15 +122,19 @@ export async function registerHandler(req: Request<{}, {},
     })
 
     if(user === null){
+        res.status(500);
         res.send({
+            status: "Error",
             data : "internal server error"
-        }).status(500);
+        })
         return;
     }
 
+    res.status(200);
     res.send({
-        data : "Success"
-    }).status(200);
+        status: "Success",
+        data : user
+    })  
     return;
 
 }

@@ -12,7 +12,8 @@ export class ExpressInstance{
 
         this._app.use(cors());
 
-        this._app.use(express.json());
+        this._app.use(express.json({limit: '50mb'}));
+        this._app.use(express.urlencoded({limit: '50mb'}));
     }
 
     public static getInstance(): ExpressInstance{
