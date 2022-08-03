@@ -6,7 +6,7 @@ import { authentication } from "../middleware/authMiddleware";
 const router : express.Router = express.Router();
 
 router.get("/", loginHandler);
-router.put("/", registerHandler);
+router.post("/", registerHandler);
 router.patch("/", authentication, verifyUserHandler)
 
 module.exports = router;

@@ -5,7 +5,7 @@ import { authentication } from "../middleware/authMiddleware";
 const router : express.Router = express.Router();
 
 router.patch("/", authentication, verifikasiPendapatanHandler);
-router.put("/mutasi", authentication, addMutasiHandler);
-router.put("/transfer", authentication, addTransferHandler)
+router.post("/mutasi", authentication, addMutasiHandler);
+router.post("/transfer", authentication, addTransferHandler)
 
 module.exports = router;

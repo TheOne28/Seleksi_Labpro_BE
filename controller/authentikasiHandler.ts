@@ -4,19 +4,20 @@ import {PrismaInstance} from '../services/prisma';
 import {Role, User } from "@prisma/client";
 import { generateToken } from "../lib/jwt";
 
-export async function loginHandler(req: Request<{}, {}, {password : string}, {username: 'string'}>, res: Response){
+export async function loginHandler(req: Request<{}, {}, {}, {username : string, password: string}>, res: Response){
     const username : string = req.query.username;
-    const password : string = req.body.password; 
+    const password : string = req.query.password; 
     const prisma = PrismaInstance.getInstance().getClient();
-
-    if(typeof username === undefined || typeof password === undefined){
+    
+    console.log(req.query);
+    if(username === undefined ||password === undefined){
+        res.status(400);
         res.send({
             status: "Error",
             data: "Bad request"
-        }).status(400);
+        })
         return;
     }
-
     const user : User | null = await prisma.user.findUnique({
         where:{
             username: username
@@ -24,17 +25,19 @@ export async function loginHandler(req: Request<{}, {}, {password : string}, {us
     })
 
     if(user === null){
+        res.status(404);
         res.send({
             status: "Error",
-            data: "User not yet registered"
+            data: "Username not yet registered"
         }).status(404);
         return;
     }else{
         if(user.role === Role.NOTVERIFIED){
+            res.status(403);
             res.send({
                 status: "Error",
-                data: "User not yet verified"
-            }).status(403);
+                data: "User account not yet verified"
+            })
             return;
         }
 
@@ -45,14 +48,22 @@ export async function loginHandler(req: Request<{}, {}, {password : string}, {us
             const token = generateToken(user.username, user.role);
             res.send({
                 status: "Success",
-                data: token,
+                data: {
+                    token : token,
+                    name : user.name,
+                    username : user.username,
+                    linkKtp: user.linkKTP,
+                    saldo : user.saldo,
+                    role: user.role,    
+                }
             }).status(200);
             return;
         }else{
+            res.status(401);
             res.send({
                 status: "Error",
                 data: "Wrong password"
-            }).status(401);
+            });
             return;
         }
     }

@@ -1,6 +1,5 @@
 import { Role, Status, Tipe,  } from "@prisma/client";
 import { Request, Response} from "express";
-import { statSync } from "fs";
 import { convertCurrency } from "../lib/currency";
 import { mutasiTransaction, transferTransaction } from "../lib/transaction";
 import { PrismaInstance } from "../services/prisma";

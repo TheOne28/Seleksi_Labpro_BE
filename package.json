@@ -30,5 +30,8 @@
   },
   "scripts": {
     "dev": "nodemon app.ts"
+  }, 
+  "prisma": {
+    "seed" : "ts-node --transpile-only prisma/seed.ts"
   }
 }
